@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if ! podman run -d --name=data-store -p 8086:8086 -v ./influx-store:/var/lib/influxdb2/ influxdb:2.7 >/dev/null 2>&1; 
+then
+  echo "podman run failed trying start"
+  if ! podman start data-store >/dev/null 2>&1; 
+  then
+    echo "podman start failed"
+    echo "data-store - Not started"
+    exit
+  fi
+fi
+
+echo "data-store - the console (influxdb) is now listening on - http://localhost:8086"
+

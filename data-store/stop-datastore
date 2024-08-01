@@ -1,0 +1,6 @@
+#!/bin/bash
+
+podman stop data-store
+
+echo "data-store - has stopped"
+
