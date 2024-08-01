@@ -38,6 +38,8 @@ This agent can be deployed on a node or in pod.  The go process will poll the sy
 
 I chose to use to use [gopsutil](https://github.com/shirou/gopsutil) to pull metrics from the host.
 
+The agent is configured by reading a YAML file.  This file location is supplied to the agent using a `--config` argument
+
 For this exercise, I have deployed the go binary in a pod, this way multiple pods can be deployed at the same time for testing.
 
 
