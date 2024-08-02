@@ -7,10 +7,10 @@ The design is to have a simple metrics-agent for pushing data at a simple API.  
 ## Components
 
 ### data-store
-With som many options available, it did not make sense to build a data store from scratch. The selection criteia for the store was:
+With so many options available, it did not make sense to build a data store from scratch. The selection criteria for the store was:
 - simple to set up
 - easy maintain
-- easy to use go client
+- easy to use with go client
 
 I settled on influxDB.  It also meets most of the exercise requirements.
 
@@ -44,7 +44,7 @@ The API has several endpoints.  These endpoints are RESTful by design:
   ~~~
   /metrics/search/organisation/{{org}}/bucket/{{bucket}}/measurement/{{measure}}/{{ {json:search} }}
   ~~~
-  This will accept HTTP POST requests from clients like metrics-agent and then make another call to influxDB to search the time series database and return results as JSON.
+  This will accept HTTP POST requests from clients and then make another call to influxDB to search the time series database and return results as JSON.
 
   The API is configured by reading a YAML file. This file location is supplied to the agent using a --config argument
 
@@ -56,7 +56,7 @@ The API has several endpoints.  These endpoints are RESTful by design:
    $ cd <metrics-root>/metrics-api/
    ~~~
 
-1. Start the Metrics Agent
+1. Start the Metrics Agent.  By default this will log to stdout in the same terminal.
    ~~~
    $ ./start-metrics-api
    ...
@@ -70,33 +70,34 @@ The API has several endpoints.  These endpoints are RESTful by design:
    -H "Content-Type: application/json" \
    -d '{"time": "2024-08-01T23:31:00+10:00", "server": "server2", "metric_type": "memory", "value": 75}'
    ~~~
-   You should it being processed by the RESTful API server and then sent to the InfluxDB
+   You should see to log entries in in the console.
+   1. Showing the message received into  the RESTful API server
+   2. Showing the message successfully sent to the InfluxDB
    ~~~
-   2024/08/02 10:09:04 main.go:89: Received metric for org=metrics, bucket=metrics, measurement=system_metrics: {Time:2024-08-01 23:31:00 +1000 AEST Server:server2 MetricType:memory Value:72}
-   2024/08/02 10:09:04 main.go:98: Received metric for org=metrics, bucket=metrics, measurement=system_metrics: {Time:2024-08-02 10:09:04.047186 +1000 AEST m=+4795.862145043 Server:server2 MetricType:memory Value:72}
-   2024/08/02 10:09:04 main.go:184: Stored metric in influxDB org=metrics, bucket=metrics, measurement=system_metrics: {Time:2024-08-02 10:09:04.047186 +1000 AEST m=+4795.862145043 Server:server2 MetricType:memory Value:72}
+   2024/08/02 13:21:26 main.go:98: Received metric for org=metrics, bucket=metrics, measurement=system_metrics: {Time:2024-08-02 13:21:26.811022 +1000 AEST m=+16338.624637501 Server:server1 MetricType:mem Value:73.24810028076172}
+   
+   2024/08/02 13:21:26 main.go:184: Stored metric in influxDB org=metrics, bucket=metrics, measurement=system_metrics: {Time:2024-08-02 13:21:26.811022 +1000 AEST m=+16338.624637501 Server:server1 MetricType:mem Value:73.24810028076172}
    ~~~
 
 1. Open the [Data Explorer of the InfluxDB](http://localhost:8086/orgs/f3adfeb5cb217564/data-explorer)
    
-   1. Try using the old data Explorer - Switch on the top right
-   3. View the metric that was just added as row in a simple table. The row should be located in:
+   1. Try using the old data Explorer, there is a switch on the top right of the page
+   2. View the metric that was just added as row in a simple table. The row should be located in:
       - **Bucket** - metrics
       - **Measurement** - system_metrics
-      - **Tag** - server - for this inserted metric `server1`
+      - **Tag** - server - for this inserted metric `server2`
       - **Tag** - metric_type - for this inserted metric `memory`
-   4. curl more rows into the database using the same curl above, view additional rows in the data explorer
+   3. curl more rows into the database using the same curl above, and view additional rows in the data explorer
 
 ### Metrics Agent (client)
-This agent can be deployed on a node or in pod.  The go process will poll the system it is running on and push the metrics to the metrics API.  It could have pushed it directly to the influxDB but the choice in this design is to obfuscate the influxDB and its features and only draw out the features that are required.  This also provides a chance to build a RESTful API (-:  
+This agent can be deployed on a node or in a pod.  The go process will poll the system it is running on and push the metrics to the metrics API.  It could have pushed it directly to the influxDB but the design choice is to obfuscate the influxDB and its features.  The Metrics API can then be used to draw out only the features that are required.  This design pattern will keep features less confusing for users or securely block them from using inappropriate features.  This also provides a chance to build a RESTful API (-:  
 
-I chose to use to use [gopsutil](https://github.com/shirou/gopsutil) to pull metrics from the host.  Only the CPU metric was implemented as a PoC. Other metrics can be developed into the same agent.
+I chose to use to use [gopsutil](https://github.com/shirou/gopsutil) to pull metrics from the host.  CPU and memory metrics have been implemented as a PoC. Because gopsutil was used it will be easy to extend the agent to process more metrics in the future.
 
 The agent is configured by reading a YAML file.  This file location is supplied to the agent using a `--config` argument.  For ease of testing, there is another flag `--hostname` is used to allow multiple agents on the same host.
 
-For this exercise, I have deployed the go binary in a pod, this way multiple pods/agent can be deployed at the same time for testing.
 
-#### Testing
+#### Testing the adding of metrics
 
 1. Ensure the metrics repo has been cloned locally.
 
@@ -107,37 +108,29 @@ For this exercise, I have deployed the go binary in a pod, this way multiple pod
 
 1. Start the metrics agent
    ~~~
-   $ ./start-metrics-agent
+   $ ./start-metrics-agent-1
    ~~~
 
-1. List
-   ~~~
-   
-   ~~~
-
-1. List
-   ~~~
-   
-   ~~~
-
-1. List
-   ~~~
-   
-   ~~~
-
-1. List
-   ~~~
-   
-   ~~~
+1. Check the [Data Explorer of the InfluxDB](http://localhost:8086/orgs/f3adfeb5cb217564/data-explorer) console to view the new rows that are being added by the agent
 
 
-
-
-
-___
-___
-1. List
+1. Additional agents can be started in separate terminals
    ~~~
-   
+   $ ./start-metrics-agent-2
+   ...
+   $ ./start-metrics-agent-3
    ~~~
 
+1. Check the Metrics API logs and the Data Explorer to see these new hosts/servers are sending in metrics
+
+#### Testing the adding of metrics
+Work in progress
+
+The second API endpoint would need to be completed
+
+**Search Metrics**
+  ~~~
+  /metrics/search/organisation/{{org}}/bucket/{{bucket}}/measurement/{{measure}}/{{ {json:search} }}
+  ~~~
+
+  Following a similar RESTful endpoint layout with the root changing to `/metrics/search/` the rest of the url selects the correct data location to search and the body of the post will provide the search criteria. 

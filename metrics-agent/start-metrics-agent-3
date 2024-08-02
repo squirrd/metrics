@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd agent
+go run main.go --config agent.yml --hostname server3
