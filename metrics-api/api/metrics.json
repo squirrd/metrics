@@ -1,0 +1,6 @@
+[
+    {"server": "server1", "metric_type": "cpu", "value": 75.4},
+    {"server": "server1", "metric_type": "memory", "value": 65.2},
+    {"server": "server2", "metric_type": "cpu", "value": 82.1},
+    {"server": "server2", "metric_type": "memory", "value": 70.5}
+]

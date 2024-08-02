@@ -1,11 +1,12 @@
 ---
 # Agent config
 metrics_api:
-  endpoint: "https://api.example.com"
+  endpoint:       "http://localhost:8080"
+  organisation:   "metrics"
+  bucket:         "metrics"
+  measurement:    "system_metrics"
   # pwd/token:
 
 metrics:
-  cpu:
-    interval: 1
-  # mem:
-    # interval: 10
+  interval: 1
+

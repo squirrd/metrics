@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# echo "Running 'podman build'"
+# echo ""
+# if ! podman build -t api .; 
+# then
+#   echo ""
+#   echo ""
+#   echo "podman build failed"
+#   exit 1
+# fi
+
+# podman  run --name metrics-api --rm -it -p 8080:8080 api
+
+# For some reason the docker version of this starts and run fine
+#  - The RESTfull API receives request and sends responses
+#  - And the influxDB client appears to work too but it wants to use IPv6 which
+#    is an issue since on the MBP version of podman the influxDB (server) container only 
+#    listens on IPv4
+# - The simplest workaround for this exercise is to not use a container for the API and
+#   then calling influxDB client appears use IPv4
+#
+cd api
+go run main.go --config metrics-api.yml

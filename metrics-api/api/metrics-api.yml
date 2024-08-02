@@ -1,0 +1,17 @@
+---
+# Metrics API config
+
+# TODO: Storing secrets in github is bad. But for a simple PoC is OK
+# TODO: Move this secret out of here and store it in a secret in OpenShift
+# TODO: Only store the name of OCP secret object here
+influxdb:
+  endpoint:       "http://127.0.0.1:8086/"
+  # endpoint:       "http://localhost:8086/"
+  token:          "3XnPAUDuPjNY9f_eJBuSB6KE4c7JjuhyARLDE9KvlmEJGXBU-7UeWBBWbiwdrauIpyki5wYZJFp96fQCjFf5LA=="
+  # organisation:   "metrics"
+  # bucket:         "metrics"
+
+
+rest_api:
+  port: 8080
+
