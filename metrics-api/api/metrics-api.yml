@@ -5,9 +5,9 @@
 # TODO: Move this secret out of here and store it in a secret in OpenShift
 # TODO: Only store the name of OCP secret object here
 influxdb:
-  endpoint:       "http://127.0.0.1:8086/"
-  # endpoint:       "http://localhost:8086/"
-  token:          "3XnPAUDuPjNY9f_eJBuSB6KE4c7JjuhyARLDE9KvlmEJGXBU-7UeWBBWbiwdrauIpyki5wYZJFp96fQCjFf5LA=="
+  #endpoint:       "http://127.0.0.1:8086/"
+  endpoint:       "http://localhost:8086/"
+  token:          "S4OAmXPVkqlTxjiB62VkcYuVqPSf2RFbEr2m0L8dQXN8LTC3BGzo9t8SB5aeX3bRe9-JKfVxZ0QUwb_iQvlbsQ=="
   # organisation:   "metrics"
   # bucket:         "metrics"
 
